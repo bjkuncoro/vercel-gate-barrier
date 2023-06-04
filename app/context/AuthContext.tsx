@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (!isPublic) {
       if (typeof window !== 'undefined') {
         if (!isAuthenticated && !localStorage.getItem('token')) {
-          // router.push('/auth/sign-in');
+          router.push('/auth/sign-in');
         }
       }
     }

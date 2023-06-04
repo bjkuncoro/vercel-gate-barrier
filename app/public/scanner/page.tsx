@@ -144,29 +144,29 @@ const ScannerPage = () => {
           setrfid(cardData);
           // checkRfid(cardData).then((res: any) => {
           // });
-          const res:any = await checkRfid(cardData)
-          console.log(res);
-          if (res.isError !== null) {
-            seterror(res.isError);
-          }
-          if (res.status === 1) {
-            setvalidationStatus(true);
-          } else {
-            setvalidationStatus(false);
-          }
-          settruckData(res.data);
-          setrfid('');
-          // inputRef.current.value = '';
-          setstep(3);
-          setTimeout(() => {
-            console.log(inputRef);
-            setstep(1);
-            setTimeout(() => {
-              const cardInput = document.getElementById('cardInput');
-              cardInput?.addEventListener('keydown', handleCardScan);
-              inputRef.current?.focus();
-            }, 500);
-          }, 5000);
+          // const res:any = await checkRfid(cardData)
+          // console.log(res);
+          // if (res.isError !== null) {
+          //   seterror(res.isError);
+          // }
+          // if (res.status === 1) {
+          //   setvalidationStatus(true);
+          // } else {
+          //   setvalidationStatus(false);
+          // }
+          // settruckData(res.data);
+          // setrfid('');
+          // // inputRef.current.value = '';
+          // setstep(3);
+          // setTimeout(() => {
+          //   console.log(inputRef);
+          //   setstep(1);
+          //   setTimeout(() => {
+          //     const cardInput = document.getElementById('cardInput');
+          //     cardInput?.addEventListener('keydown', handleCardScan);
+          //     inputRef.current?.focus();
+          //   }, 500);
+          // }, 5000);
         }
       }
     };

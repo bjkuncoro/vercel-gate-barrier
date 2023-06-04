@@ -1,6 +1,7 @@
 import { Card, Title, Text } from '@tremor/react';
-// import { queryBuilder } from '../lib/planetscale';
+import { queryBuilder } from '../lib/planetscale';
 import Search from './search';
+import MasterDataTable from './components/Molecules/MasterDataTable';
 // import UsersTable from './table';
 
 export const dynamic = 'force-dynamic';
@@ -89,6 +90,7 @@ export default async function IndexPage({
       <Card className="mt-6">
         {/* <UsersTable users={users} /> */}
       </Card>
+      {/* <MasterDataTable/> */}
     </main>
   );
 }
