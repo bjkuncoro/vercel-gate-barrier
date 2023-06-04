@@ -1,9 +1,10 @@
 import './globals.css';
 
-import Nav from './nav';
+// import Nav from './nav';
 import AnalyticsWrapper from './analytics';
-import Toast from './toast';
 import { Suspense } from 'react';
+import { AuthProvider } from './context/AuthContext';
+import Navbar from './navbar';
 
 export const metadata = {
   title: 'Next.js 13 + PlanetScale + NextAuth + Tailwind CSS',
@@ -19,13 +20,14 @@ export default async function RootLayout({
   return (
     <html lang="en" className="h-full bg-gray-50">
       <body className="h-full">
-        <Suspense fallback="...">
-          {/* @ts-expect-error Server Component */}
-          <Nav />
-        </Suspense>
-        {children}
+        {/* <AuthProvider> */}
+          {/* <Suspense fallback={<p>loading. . .</p>}>
+            <Navbar />
+          </Suspense> */}
+          {children}
+        {/* </AuthProvider> */}
+        {/* {children} */}
         <AnalyticsWrapper />
-        <Toast />
       </body>
     </html>
   );
