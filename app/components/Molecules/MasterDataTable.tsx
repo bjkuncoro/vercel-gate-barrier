@@ -16,15 +16,16 @@ import {
   WrenchScrewdriverIcon,
   ClockIcon,
   CalendarDaysIcon,
-  PresentationChartBarIcon
+  PresentationChartBarIcon,
+  ArrowUpOnSquareStackIcon
 } from '@heroicons/react/24/solid';
 import { CheckBadgeIcon } from '@heroicons/react/24/outline';
-import axios from 'axios';
 import ItemDialog from '../Atoms/ItemDialog';
 import DataTable, { ExpanderComponentProps } from 'react-data-table-component';
 import * as XLSX from 'xlsx';
 import moment from 'moment';
 import { useAuth } from '../../context/AuthContext';
+import ImportDialog from '../Atoms/ImportDialog';
 
 const toReadableText = (str: any) => {
   return str.replace(/_+/g, ' ').replace(/(?:^|\s)\S/g, function (match: any) {
@@ -56,7 +57,13 @@ const DataItem = ({
         <Badge size="xs" color={'cyan'} icon={CheckBadgeIcon}>
           {label}
         </Badge>
-        <span className='ml-2 text-xl font-mono font-medium'>{value}</span>
+        <span
+          className={`ml-2 text-${
+            label === 'No Surat Tera' ? 'sm' : 'xl'
+          } font-mono font-medium`}
+        >
+          {value ? value : '-'}
+        </span>
       </div>
     </div>
   );
@@ -212,19 +219,21 @@ const ExpandedComponent: React.FC<any> = ({
   return (
     <div className="flex flex-row py-8">
       <div className="grid grid-cols-2 gap-4 basis-2/3">
-        {Object.entries(updatedObject).map(([key, value]:[key:any,value:any]) => (
-          <DataItem
-            key={key}
-            label={toReadableText(key)}
-            color="blue"
-            value={
-              key.includes('masa_berlaku')
-                ? moment(new Date(value)).format('DD MMM YYYY')
-                : value
-            }
-            icon={getIcon(key)}
-          />
-        ))}
+        {Object.entries(updatedObject).map(
+          ([key, value]: [key: any, value: any]) => (
+            <DataItem
+              key={key}
+              label={toReadableText(key)}
+              color="blue"
+              value={
+                key.includes('masa_berlaku')
+                  ? moment(new Date(value)).format('DD MMM YYYY')
+                  : value
+              }
+              icon={getIcon(key)}
+            />
+          )
+        )}
       </div>
       <div className="flex-col flex basis-1/3 pl-6 gap-3">
         <Button
@@ -243,7 +252,7 @@ const ExpandedComponent: React.FC<any> = ({
               Penanggung Jawab
             </Badge>
             <span className="text-4xl font-medium text-gray-800">
-              {data.employee_detail.name}
+              {data.employee_detail?data.employee_detail.name : 'Belum terdata'}
             </span>
           </div>
         </div>
@@ -289,6 +298,7 @@ const ExpandedComponent: React.FC<any> = ({
 const MasterDataTable = () => {
   const { fetchVehicle, loading, vehicleList } = useAuth();
   const [ShowItemDialog, setShowItemDialog] = useState(false);
+  const [ShowImportDialog, setShowImportDialog] = useState(false);
   const [selectedData, setselectedData] = useState<any>({});
   const [filterText, setFilterText] = useState<string>('');
 
@@ -309,6 +319,16 @@ const MasterDataTable = () => {
   const subHeaderComponentMemo = React.useMemo(() => {
     return (
       <div className="flex flex-row gap-2">
+        <Button
+          variant="primary"
+          color="rose"
+          icon={ArrowUpOnSquareStackIcon}
+          size="lg"
+          type="submit"
+          onClick={() => setShowImportDialog(true)}
+        >
+          Import Data
+        </Button>
         <Button
           variant="primary"
           icon={PresentationChartBarIcon}
@@ -419,6 +439,10 @@ const MasterDataTable = () => {
         show={ShowItemDialog}
         SetShowItemDialog={handleSetShowItemDialog}
         selectedData={selectedData}
+      />
+      <ImportDialog
+        show={ShowImportDialog}
+        SetShowImportDialog={(val: any) => setShowImportDialog(val)}
       />
       <Card className="mt-4">
         <div className="flex mb-8 flex-row justify-between">

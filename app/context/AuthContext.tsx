@@ -18,7 +18,10 @@ const AuthContext = createContext({
   upsertVehicle: (data: any) => {},
   fetchEmployeeByCompanyId: (id: string) => {},
   checkRfid: (rfid: string) => {},
+  sendImport: (data: any, type: string) => {},
+  downloadTemplate: (type: string) => {},
   loading: false,
+  loadingImport: false,
   scanloading: false,
   userInfo: {
     id: '',
@@ -41,6 +44,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadingImport, setLoadingImport] = useState(false);
   const [scanloading, setScanLoading] = useState(false);
   const [userInfo, setUserInfo] = useState<any>(null);
   const [companyList, setCompanyList] = useState<any>([]);
@@ -223,6 +227,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const sendImport = async (data: any, type: string) => {
+    setLoadingImport(true);
+    try {
+      const response = await ReqApi.post(`/${type}/import`, data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (response.data.message === 'Bulk insert completed successfully') {
+        toast.success(response.data.message);
+        fetchVehicle();
+      } else {
+        toast.error('Gagal Import Data');
+      }
+      return response.data;
+    } catch (error) {
+      toast.error('Gagal Import Data');
+      console.log(error);
+    } finally {
+      setLoadingImport(false);
+    }
+  };
+
   const checkRfid = async (rfid: string) => {
     setScanLoading(true);
     try {
@@ -230,6 +255,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         `${process.env.NEXT_PUBLIC_SERVICE_API}/vehicles/check/${rfid}`
       );
       return response.data;
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setScanLoading(false);
+    }
+  };
+
+  const downloadTemplate = async (type: string) => {
+    setScanLoading(true);
+    try {
+      const response = await ReqApi.get(`/${type}/template-download`);
+      return response.data
     } catch (error) {
       console.log(error);
     } finally {
@@ -257,7 +294,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         upsertEmployee,
         upsertCompany,
         upsertVehicle,
-        checkRfid
+        sendImport,
+        checkRfid,
+        loadingImport,
+        downloadTemplate
       }}
     >
       {children}
