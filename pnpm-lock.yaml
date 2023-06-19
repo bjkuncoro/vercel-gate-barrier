@@ -88,6 +88,9 @@ dependencies:
   react-hot-toast:
     specifier: ^2.4.1
     version: 2.4.1(csstype@3.1.1)(react-dom@18.2.0)(react@18.2.0)
+  react-switch:
+    specifier: ^7.0.0
+    version: 7.0.0(react-dom@18.2.0)(react@18.2.0)
   react-tailwindcss-datepicker:
     specifier: ^1.6.1
     version: 1.6.1(dayjs@1.11.7)(react@18.2.0)
@@ -4201,6 +4204,17 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-transition-group: 2.9.0(react-dom@18.2.0)(react@18.2.0)
+    dev: false
+
+  /react-switch@7.0.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-KkDeW+cozZXI6knDPyUt3KBN1rmhoVYgAdCJqAh7st7tk8YE6N0iR89zjCWO8T8dUTeJGTR0KU+5CHCRMRffiA==}
+    peerDependencies:
+      react: ^15.3.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^15.3.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      prop-types: 15.8.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /react-tailwindcss-datepicker@1.6.1(dayjs@1.11.7)(react@18.2.0):

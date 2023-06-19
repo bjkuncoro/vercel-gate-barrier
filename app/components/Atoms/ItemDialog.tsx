@@ -7,6 +7,7 @@ import * as Yup from 'yup';
 import Datepicker from 'react-tailwindcss-datepicker';
 import { useAuth } from '../../context/AuthContext';
 import { BuildingOffice2Icon, QrCodeIcon } from '@heroicons/react/24/outline';
+import Switch from 'react-switch';
 
 const generateInitialValues = (fields: any[]) => {
   return fields.reduce((values, field) => {
@@ -44,7 +45,8 @@ const ItemDialog = ({
     upsertVehicle,
     companyList,
     employeeList,
-    fetchEmployeeByCompanyId
+    fetchEmployeeByCompanyId,
+    setVehicleStatus
   } = useAuth();
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -55,6 +57,8 @@ const ItemDialog = ({
   const [selectedCompany, setSelectedCompany] = React.useState('');
   const [selectedEmployee, setSelectedEmployee] = React.useState('');
   const [isFocused, setIsFocused] = React.useState(false);
+  const [isActive, setIsActive] = React.useState<any>(false);
+  const [statusLoading, setstatusLoading] = React.useState<any>(false);
 
   const menuVariants = {
     open: {
@@ -125,7 +129,7 @@ const ItemDialog = ({
       },
       {
         name: 'ket',
-        label: 'ket',
+        label: 'Keterangan',
         type: 'text',
         required: false
       },
@@ -317,8 +321,10 @@ const ItemDialog = ({
       setSelectedCompany('');
     }
     if (selectedData) {
+      console.log(selectedData);
       setSelectedCompany(selectedData.company_id);
       setSelectedEmployee(selectedData.employee_id);
+      setIsActive(selectedData.is_active === 1);
     }
     if (show) {
       // inputRef.current?.focus();
@@ -326,7 +332,6 @@ const ItemDialog = ({
       const handleCardScan = async (event: any) => {
         if (event.key === 'Enter') {
           formik.setFieldValue('kode_rfid', '');
-          console.log(event.target.value);
           const cardData = event.target.value.slice(0, 10);
           console.log('RFID scanned:', cardData);
           formik.setFieldValue('kode_rfid', cardData);
@@ -351,7 +356,7 @@ const ItemDialog = ({
 
   React.useEffect(() => {
     if (selectedCompany) {
-      console.log(selectedCompany);
+      // console.log(selectedCompany);
       fetchEmployeeByCompanyId(selectedCompany);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -369,6 +374,23 @@ const ItemDialog = ({
     if (field === 'penanggung_jawab') {
       setSelectedEmployee(value);
       formik.setFieldValue('employee_id', value);
+    }
+  };
+
+  const handleToggle = async (val: any) => {
+    console.log(val);
+    setIsActive(val);
+
+    try {
+      setstatusLoading(true);
+      const resp = await setVehicleStatus(
+        selectedData.id,
+        val ? '1' : '0'
+      );
+      console.log(resp);
+    } catch (err) {
+    } finally {
+      setstatusLoading(false);
     }
   };
 
@@ -410,6 +432,35 @@ const ItemDialog = ({
         >
           Close
         </Button>
+      </div>
+      <div className="p-4 flex justify-between items-center flex-row border-2 border-slate-200 rounded-lg mt-8">
+        {!statusLoading ? (
+          <>
+            <div className="flex flex-col">
+              <span className="text-md">Status</span>
+              <span
+                className={`text-2xl font-semibold font-mono text-${
+                  isActive ? 'green-400' : 'red-500'
+                }`}
+              >
+                {isActive ? 'AKTIF' : 'NONAKTIF'}
+              </span>
+            </div>
+            <div>
+              <Switch
+                uncheckedIcon={false}
+                checkedIcon={false}
+                draggable={false}
+                offColor="#ecc7f9"
+                onColor="#8a4af3"
+                onChange={handleToggle}
+                checked={isActive}
+              />
+            </div>
+          </>
+        ) : (
+          <div className="text-slate-400">Mengupdate Data. . .</div>
+        )}
       </div>
       <input
         ref={inputRef}

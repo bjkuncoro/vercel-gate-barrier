@@ -20,6 +20,7 @@ const AuthContext = createContext({
   checkRfid: (rfid: string) => {},
   sendImport: (data: any, type: string) => {},
   downloadTemplate: (type: string) => {},
+  setVehicleStatus: async (id: string, val: string) => {},
   loading: false,
   loadingImport: false,
   scanloading: false,
@@ -153,7 +154,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const fetchEmployeeByCompanyId = async (id: string) => {
     try {
-      setLoading(true);
+      // setLoading(true);
       const response = await ReqApi.get(`/employees/list/${id}`);
       if (response.data.length) {
         setEmployeeList(response.data);
@@ -161,7 +162,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       console.log(error);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -266,11 +267,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setScanLoading(true);
     try {
       const response = await ReqApi.get(`/${type}/template-download`);
-      return response.data
+      return response.data;
     } catch (error) {
       console.log(error);
     } finally {
       setScanLoading(false);
+    }
+  };
+
+  const setVehicleStatus = async (id: string, val: string) => {
+    try {
+      const response = await ReqApi.get(`/vehicles/set-status/${id}/${val}`);
+      fetchVehicle();
+
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    } finally {
+      // setScanLoading(false);
     }
   };
 
@@ -297,7 +311,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         sendImport,
         checkRfid,
         loadingImport,
-        downloadTemplate
+        downloadTemplate,
+        setVehicleStatus
       }}
     >
       {children}
