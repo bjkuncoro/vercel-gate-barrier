@@ -17,7 +17,7 @@ const AuthContext = createContext({
   upsertCompany: (data: any) => {},
   upsertVehicle: (data: any) => {},
   fetchEmployeeByCompanyId: (id: string) => {},
-  checkRfid: (rfid: string) => {},
+  checkRfid: async (rfid: string) => {},
   sendImport: (data: any, type: string) => {},
   downloadTemplate: (type: string) => {},
   setVehicleStatus: async (id: string, val: string) => {},
@@ -278,8 +278,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const setVehicleStatus = async (id: string, val: string) => {
     try {
       const response = await ReqApi.get(`/vehicles/set-status/${id}/${val}`);
-      fetchVehicle();
-
+      if (response.data.success) {
+        fetchVehicle();
+      }
       return response.data;
     } catch (error) {
       console.log(error);

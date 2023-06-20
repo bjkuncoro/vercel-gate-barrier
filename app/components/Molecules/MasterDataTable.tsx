@@ -92,6 +92,7 @@ const ExpandedComponent: React.FC<any> = ({
     'createdAt',
     'updatedAt',
     'id',
+    'is_active',
     'company_id',
     'employee_id'
   ];
@@ -236,6 +237,18 @@ const ExpandedComponent: React.FC<any> = ({
         )}
       </div>
       <div className="flex-col flex basis-1/3 pl-6 gap-3">
+        <div className="p-4 flex justify-between items-center flex-row border-2 border-slate-200 rounded-lg">
+          <div className="flex flex-col">
+            <span className="text-md">Status</span>
+            <span
+              className={`text-2xl font-semibold font-mono text-${
+                data.is_active ? 'green-400' : 'red-500'
+              }`}
+            >
+              {data.is_active ? 'AKTIF' : 'NONAKTIF'}
+            </span>
+          </div>
+        </div>
         <Button
           variant="primary"
           icon={CommandLineIcon}
@@ -249,10 +262,22 @@ const ExpandedComponent: React.FC<any> = ({
         <div className="flex flex-row p-2 bg-red-50 rounded-lg border-2 border-gray-200">
           <div className="flex flex-col basis-3/4 gap-3 ml-2 pt-1 justify-center">
             <Badge size="xs" color={'red'} icon={CheckBadgeIcon}>
-              Penanggung Jawab
+              Perusahaan/Pemilik
             </Badge>
             <span className="text-4xl font-medium text-gray-800">
-              {data.employee_detail?data.employee_detail.name : 'Belum terdata'}
+              {data.company_detail ? data.company_detail.name : 'Belum terdata'}
+            </span>
+          </div>
+        </div>
+        <div className="flex flex-row p-2 bg-red-50 rounded-lg border-2 border-gray-200">
+          <div className="flex flex-col basis-3/4 gap-3 ml-2 pt-1 justify-center">
+            <Badge size="xs" color={'red'} icon={CheckBadgeIcon}>
+              Penanggung Jawab
+            </Badge>
+            <span className="text-2xl font-medium text-gray-800">
+              {data.employee_detail
+                ? data.employee_detail.name
+                : 'Belum terdata'}
             </span>
           </div>
         </div>
@@ -403,12 +428,12 @@ const MasterDataTable = () => {
       name: 'Kapasitas Tangki (Liter)',
       selector: (row: any) => row.kap_liter,
       sorttable: true
-    },
-    {
-      name: 'Nama Pemilik/Perusahaan',
-      selector: (row: any) => row.company_detail.name,
-      sorttable: true
     }
+    // {
+    //   name: 'Nama Pemilik/Perusahaan',
+    //   selector: (row: any) => row.company_detail.name,
+    //   sorttable: true
+    // }
   ];
 
   useEffect(() => {

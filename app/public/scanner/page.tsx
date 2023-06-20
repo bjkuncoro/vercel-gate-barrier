@@ -17,7 +17,9 @@ import {
   WrenchScrewdriverIcon,
   ClockIcon,
   CalendarDaysIcon,
-  PresentationChartBarIcon
+  PresentationChartBarIcon,
+  BellAlertIcon,
+  CheckCircleIcon
 } from '@heroicons/react/24/solid';
 import { CheckBadgeIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../../context/AuthContext';
@@ -94,6 +96,7 @@ const ScannerPage = () => {
   });
   const [validationStatus, setvalidationStatus] = useState<any>(false);
   const [error, seterror] = useState<any>({ message: 'error' });
+  const [valid, setvalid] = useState<any>({ message: 'valid' });
   const inputRef = useRef<HTMLInputElement>(null);
 
   const filterObjectByKeys = (obj: any, keys: any) => {
@@ -144,10 +147,13 @@ const ScannerPage = () => {
           setrfid(cardData);
           // checkRfid(cardData).then((res: any) => {
           // });
-          const res:any = await checkRfid(cardData)
+          const res: any = await checkRfid(cardData);
           console.log(res);
           if (res.isError !== null) {
             seterror(res.isError);
+          }
+          if (res.validData !== null) {
+            setvalid(res.validData);
           }
           if (res.status === 1) {
             setvalidationStatus(true);
@@ -156,7 +162,6 @@ const ScannerPage = () => {
           }
           settruckData(res.data);
           setrfid('');
-          // inputRef.current.value = '';
           setstep(3);
           setTimeout(() => {
             console.log(inputRef);
@@ -166,7 +171,7 @@ const ScannerPage = () => {
               cardInput?.addEventListener('keydown', handleCardScan);
               inputRef.current?.focus();
             }, 500);
-          }, 5000);
+          }, 15000);
         }
       }
     };
@@ -352,7 +357,7 @@ const ScannerPage = () => {
                 // onBlur={handleBlur}
                 defaultValue={rfid}
                 type="text"
-                style={{ height: 0 }}
+                style={{ height: '30px' }}
               />
             </div>
           </div>
@@ -408,7 +413,11 @@ const ScannerPage = () => {
                 />
               </div>
               <div className="flex flex-col pl-8">
-                <span className="text-7xl font-mono font-semibold text-green-600">
+                <span
+                  className={`text-7xl font-mono font-semibold text-${
+                    validationStatus ? 'green-400' : 'red-500'
+                  }`}
+                >
                   Validasi {validationStatus ? 'Sukses' : 'Gagal'}
                 </span>
                 <span className="text-xl">
@@ -416,15 +425,53 @@ const ScannerPage = () => {
                 </span>
                 <span className="text-3xl mt-4 text-slate-500">
                   {validationStatus
-                    ? 'Silahkan Masuk'
+                    ? 'Gerbang Akan Terbuka dalam 5 Detik'
                     : 'Check kembali data anda'}
-                  ,
                 </span>
-                <span className="text-4xl text-slate-500">
-                  {validationStatus
-                    ? 'Gerbang akan terbuka dalam 5 detik'
-                    : JSON.stringify(error)}
-                </span>
+                {validationStatus ? (
+                  <div className="flex flex-col gap-3 mt-2">
+                    {Object.entries(valid).map(
+                      ([key, value]: [key: any, value: any]) => (
+                        <div
+                          key={key}
+                          className="bg-blue-500 w-full rounded-lg flex flex-row justify-start item-center p-2 pr-4"
+                        >
+                          <Icon
+                            size="lg"
+                            icon={CheckCircleIcon}
+                            color="yellow"
+                          />
+                          <div className="flex flex-col justify-center ml-2">
+                            <span className="text-white text-2xl font-medium">
+                              {value['message']}
+                            </span>
+                          </div>
+                        </div>
+                      )
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-3 mt-2">
+                    {Object.entries(error).map(
+                      ([key, value]: [key: any, value: any]) => (
+                        <div
+                          key={key}
+                          className="bg-red-600 w-full rounded-lg flex flex-row justify-start item-center p-4"
+                        >
+                          <Icon size="lg" icon={BellAlertIcon} color="amber" />
+                          <div className="flex flex-col justify-center ml-2">
+                            <span className="text-white text-2xl font-semibold">
+                              {value['message']}
+                            </span>
+                            <span className="text-white text-3xl font-medium">
+                              {value['notes']}
+                            </span>
+                          </div>
+                        </div>
+                      )
+                    )}
+                  </div>
+                )}
                 <div className="flex flex-row mt-4 gap-4">
                   <div className="flex flex-row p-4 bg-red-50 rounded-lg border-2 border-gray-200">
                     <div className="flex flex-col gap-3 justify-center">
@@ -449,19 +496,7 @@ const ScannerPage = () => {
                 </div>
               </div>
             </div>
-            <div className="flex flex-col mt-8">
-              <div className="grid grid-cols-4 gap-4">
-                {Object.entries(filteredData).map(([key, value]) => (
-                  <DataItem
-                    key={key}
-                    label={toReadableText(key)}
-                    color="blue"
-                    value={value}
-                    icon={getIcon(key)}
-                  />
-                ))}
-              </div>
-              <Divider />
+            <div className="flex flex-col mt-8 px-6">
               <div className="grid grid-cols-4 gap-4">
                 {Object.entries(filteredData2).map(([key, value]) => (
                   <DataItem
