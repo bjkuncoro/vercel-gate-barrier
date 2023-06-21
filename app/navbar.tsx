@@ -11,7 +11,6 @@ import { useAuth } from './context/AuthContext';
 const navigation = [
   { name: 'Dashboard', href: '/' },
   { name: 'Master Data', href: '/master-data' },
-  { name: 'Playground', href: '/playground' },
   { name: 'Histori', href: '/histori' }
 ];
 

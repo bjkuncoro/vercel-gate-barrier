@@ -10,17 +10,21 @@ const AuthContext = createContext({
   login: (username: string, password: string) => {},
   logout: () => {},
   getMe: () => {},
-  fetchCompany: () => {},
-  fetchEmployee: () => {},
-  fetchVehicle: () => {},
+  fetchCompany: async () => {},
+  fetchEmployee: async () => {},
+  fetchVehicle: async () => {},
+  fetchHistory: async () => {},
   upsertEmployee: (data: any) => {},
   upsertCompany: (data: any) => {},
   upsertVehicle: (data: any) => {},
-  fetchEmployeeByCompanyId: (id: string) => {},
+  fetchEmployeeByCompanyId: async (id: string) => {},
+  fetchVehicleGroupBy: async () => {},
+  fetchHistoryToday: async () => {},
   checkRfid: async (rfid: string) => {},
   sendImport: (data: any, type: string) => {},
   downloadTemplate: (type: string) => {},
   setVehicleStatus: async (id: string, val: string) => {},
+  fetchHistoryByLast: async (dayln: string) => {},
   loading: false,
   loadingImport: false,
   scanloading: false,
@@ -36,7 +40,8 @@ const AuthContext = createContext({
   },
   companyList: [],
   employeeList: [],
-  vehicleList: []
+  vehicleList: [],
+  historyList: []
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -51,6 +56,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [companyList, setCompanyList] = useState<any>([]);
   const [employeeList, setEmployeeList] = useState<any>([]);
   const [vehicleList, setVehicleList] = useState<any>([]);
+  const [historyList, setHistoryList] = useState<any>([]);
   const pathname = usePathname();
   const isPublic = pathname?.includes('/public') || pathname?.includes('/auth');
 
@@ -131,6 +137,56 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (response.data.length) {
         setCompanyList(response.data);
       }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchHistory = async () => {
+    try {
+      setLoading(true);
+      const response = await ReqApi.get('/histories/list');
+      if (response.data.length) {
+        setHistoryList(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchHistoryToday = async () => {
+    try {
+      setLoading(true);
+      const response = await ReqApi.get('/histories/collected-data');
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchHistoryByLast = async (dayln: string) => {
+    try {
+      setLoading(true);
+      const response = await ReqApi.get(`/histories/collected/${dayln}/day`);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchVehicleGroupBy = async () => {
+    try {
+      setLoading(true);
+      const response = await ReqApi.get('/vehicles/get-by-company');
+      return response.data;
     } catch (error) {
       console.log(error);
     } finally {
@@ -301,8 +357,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         scanloading,
         fetchCompany,
         fetchEmployee,
+        fetchHistory,
+        fetchHistoryToday,
         fetchEmployeeByCompanyId,
         fetchVehicle,
+        fetchVehicleGroupBy,
         companyList,
         employeeList,
         vehicleList,
@@ -313,7 +372,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         checkRfid,
         loadingImport,
         downloadTemplate,
-        setVehicleStatus
+        setVehicleStatus,
+        historyList,
+        fetchHistoryByLast
       }}
     >
       {children}
