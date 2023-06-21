@@ -357,7 +357,7 @@ const ScannerPage = () => {
                 // onBlur={handleBlur}
                 defaultValue={rfid}
                 type="text"
-                style={{ height: '30px' }}
+                style={{ height: '0px' }}
               />
             </div>
           </div>
