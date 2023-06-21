@@ -311,6 +311,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_SERVICE_API}/vehicles/check/${rfid}`
       );
+      console.log(response)
       return response.data;
     } catch (error) {
       console.log(error);
