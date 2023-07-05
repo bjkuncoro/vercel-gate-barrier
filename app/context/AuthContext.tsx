@@ -25,6 +25,7 @@ const AuthContext = createContext({
   downloadTemplate: (type: string) => {},
   setVehicleStatus: async (id: string, val: string) => {},
   fetchHistoryByLast: async (dayln: string) => {},
+  fetchNotification: async () => {},
   loading: false,
   loadingImport: false,
   scanloading: false,
@@ -311,7 +312,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_SERVICE_API}/vehicles/check/${rfid}`
       );
-      console.log(response)
+      console.log(response);
       return response.data;
     } catch (error) {
       console.log(error);
@@ -338,6 +339,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (response.data.success) {
         fetchVehicle();
       }
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    } finally {
+      // setScanLoading(false);
+    }
+  };
+
+  const fetchNotification = async () => {
+    try {
+      const response = await ReqApi.get(`/vehicles/get-notification`);
+      // if (response.data.success) {
+      // fetchVehicle();
+      // }
       return response.data;
     } catch (error) {
       console.log(error);
@@ -375,7 +390,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         downloadTemplate,
         setVehicleStatus,
         historyList,
-        fetchHistoryByLast
+        fetchHistoryByLast,
+        fetchNotification
       }}
     >
       {children}
