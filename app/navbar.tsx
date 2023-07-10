@@ -110,9 +110,15 @@ export default function Navbar() {
                         leaveTo="transform opacity-0 scale-95"
                       >
                         <Menu.Items
-                          style={{ width: 600,height:800 }}
+                          style={{ width: 600, height: 800 }}
                           className="absolute right-0 overflow-y-scroll z-10 mt-2 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                         >
+                          {notifData && (
+                            <div className="p-4">
+                              Jumlah Kendaraan akan/sudah expired :{' '}
+                              {notifData.length} Mobil Tangki
+                            </div>
+                          )}
                           {notifData &&
                             notifData.map((item: any) => {
                               return (

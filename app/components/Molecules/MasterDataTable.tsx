@@ -327,7 +327,7 @@ const MasterDataTable = () => {
   const [selectedData, setselectedData] = useState<any>({});
   const [filterText, setFilterText] = useState<string>('');
 
-  const filteredItems = vehicleList.filter(
+  const filteredItems: any = vehicleList.filter(
     (item: any) =>
       item.nopol_kendaraan &&
       item.nopol_kendaraan.toLowerCase().includes(filterText.toLowerCase())
@@ -335,10 +335,19 @@ const MasterDataTable = () => {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const exportToExcel = () => {
+    delete filteredItems.company_id;
+    delete filteredItems.employee_id;
+    const exportObj: any = filteredItems.map((item: any) => {
+      return {
+        ...item,
+        company_name: item.company_detail.name
+      };
+    });
+    delete exportObj.company_detail;
     const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet(filteredItems);
+    const worksheet = XLSX.utils.json_to_sheet(exportObj);
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet 1');
-    XLSX.writeFile(workbook, `${moment().format('YYYY-MM-DD')}.xlsx`);
+    XLSX.writeFile(workbook, `Mobil-Tangki-Rekap(${moment().format('YYYY-MM-DD')}).xlsx`);
   };
 
   const subHeaderComponentMemo = React.useMemo(() => {
