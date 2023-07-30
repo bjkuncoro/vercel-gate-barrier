@@ -539,7 +539,7 @@ const ItemDialog = ({
                     <TextInput
                       id={field.name}
                       name={field.name}
-                      disabled={field.name === 'kode_rfid'}
+                      disabled={field.name === 'kode_rfid' || field.name === 'umur'}
                       placeholder=""
                       error={formik.touched[field.name] && error}
                       errorMessage={formik.touched[field.name] && error}

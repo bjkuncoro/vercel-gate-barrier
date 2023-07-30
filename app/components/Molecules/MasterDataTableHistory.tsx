@@ -21,8 +21,10 @@ const MasterDataTableHistory = () => {
 
   const filteredItems = historyList.filter(
     (item: any) =>
-      item.rfid_code &&
-      item.rfid_code.toLowerCase().includes(filterText.toLowerCase())
+      item.vehicle_detail &&
+      item.vehicle_detail.nopol_kendaraan
+        .toLowerCase()
+        .includes(filterText.toLowerCase())
   );
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const exportToExcel = () => {
@@ -114,10 +116,10 @@ const MasterDataTableHistory = () => {
       cell: (row: any) => (
         <div>
           {row.status === 'failed' ? (
-            <div className='my-2'>
+            <div className="my-2">
               {Object.entries(JSON.parse(row.notes)).map(
                 ([key, value]: [key: any, value: any]) => (
-                  <div key={key}>• {value.message?value.message:value}</div>
+                  <div key={key}>• {value.message ? value.message : value}</div>
                 )
               )}
             </div>

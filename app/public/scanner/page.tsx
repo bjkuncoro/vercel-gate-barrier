@@ -171,7 +171,7 @@ const ScannerPage = () => {
               cardInput?.addEventListener('keydown', handleCardScan);
               inputRef.current?.focus();
             }, 500);
-          }, 15000);
+          }, 45000);
         }
       }
     };
