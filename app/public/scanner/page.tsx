@@ -347,17 +347,15 @@ const ScannerPage = () => {
                 type="text"
                 disabled
                 defaultValue={rfid}
-                // onBlur={handleBlur}
                 className=" h-20 px-4 w-full text-2xl rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500"
                 placeholder="RFID CODE"
               />
               <input
                 ref={inputRef}
                 id="cardInput"
-                // onBlur={handleBlur}
                 defaultValue={rfid}
                 type="text"
-                style={{ height: '0px' }}
+                style={{ height: 0 }}
               />
             </div>
           </div>

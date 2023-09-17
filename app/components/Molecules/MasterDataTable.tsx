@@ -1,5 +1,6 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
+import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Card, Button, Badge, Icon, TextInput, Divider } from '@tremor/react';
 import {
   PlusIcon,
@@ -94,7 +95,8 @@ const ExpandedComponent: React.FC<any> = ({
     'id',
     'is_active',
     'company_id',
-    'employee_id'
+    'employee_id',
+    'additional_data'
   ];
 
   const updatedObject = { ...data };
@@ -334,7 +336,7 @@ const MasterDataTable = () => {
   );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const exportToExcel = () => {
+  const exportToExcel = (params: any = 'all') => {
     delete filteredItems.company_id;
     delete filteredItems.employee_id;
     const exportObj: any = filteredItems.map((item: any) => {
@@ -344,10 +346,19 @@ const MasterDataTable = () => {
       };
     });
     delete exportObj.company_detail;
+    const finalData =
+      params === 'all'
+        ? exportObj
+        : exportObj.filter((item: any) => item.is_active === 1);
     const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet(exportObj);
+    const worksheet = XLSX.utils.json_to_sheet(finalData);
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet 1');
-    XLSX.writeFile(workbook, `Mobil-Tangki-Rekap(${moment().format('YYYY-MM-DD')}).xlsx`);
+    XLSX.writeFile(
+      workbook,
+      `Mobil-Tangki-${
+        params === 'all' ? 'Semua' : 'Aktif'
+      }-Rekap(${moment().format('YYYY-MM-DD')}).xlsx`
+    );
   };
 
   const subHeaderComponentMemo = React.useMemo(() => {
@@ -363,15 +374,48 @@ const MasterDataTable = () => {
         >
           Import Data
         </Button>
-        <Button
-          variant="primary"
-          icon={PresentationChartBarIcon}
-          size="lg"
-          type="submit"
-          onClick={() => exportToExcel()}
-        >
-          Export Data
-        </Button>
+        <Menu as="div" className="relative">
+          <div>
+            <Menu.Button className="">
+              <Button
+                variant="primary"
+                icon={PresentationChartBarIcon}
+                size="lg"
+                type="submit"
+              >
+                Export Data
+              </Button>
+            </Menu.Button>
+          </div>
+          <Transition
+            as={Fragment}
+            enter="transition ease-out duration-200"
+            enterFrom="transform opacity-0 scale-95"
+            enterTo="transform opacity-100 scale-100"
+            leave="transition ease-in duration-75"
+            leaveFrom="transform opacity-100 scale-100"
+            leaveTo="transform opacity-0 scale-95"
+          >
+            <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <Menu.Item>
+                <button
+                  className="flex w-full px-4 py-2 text-sm text-gray-700"
+                  onClick={() => exportToExcel('activeOnly')}
+                >
+                  Data Kendaraan Aktif
+                </button>
+              </Menu.Item>
+              <Menu.Item>
+                <button
+                  className="flex w-full px-4 py-2 text-sm text-gray-700"
+                  onClick={() => exportToExcel('all')}
+                >
+                  Semua Data
+                </button>
+              </Menu.Item>
+            </Menu.Items>
+          </Transition>
+        </Menu>
         <TextInput
           name="filter"
           placeholder="Filter by No Polisi"

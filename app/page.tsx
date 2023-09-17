@@ -124,8 +124,13 @@ export default function PlaygroundPage() {
   useEffect(() => {
     const topCount = [
       {
-        title: 'Jumlah Mobil Tangki',
+        title: 'Jumlah Mobil Tangki Terdaftar',
         metric: vehicleList.length,
+        subtitle: 'Terdaftar'
+      },
+      {
+        title: 'Jumlah Mobil Tangki Aktif',
+        metric: vehicleList.filter((i: any) => i.is_active === 1).length,
         subtitle: 'Terdaftar'
       },
       {
@@ -145,7 +150,7 @@ export default function PlaygroundPage() {
 
   return (
     <main className="p-4 md:p-10 mx-auto max-w-7xl">
-      <Grid className="gap-6" numColsSm={2} numColsLg={3}>
+      <Grid className="gap-6" numColsSm={2} numColsLg={4}>
         {topDataCount.map((item: any) => (
           <Card key={item.title}>
             <Flex alignItems="start">

@@ -1,6 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Button, TextInput, SelectBox, SelectBoxItem } from '@tremor/react';
+import {
+  Button,
+  TextInput,
+  SelectBox,
+  SelectBoxItem,
+  Divider
+} from '@tremor/react';
 import { XCircleIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
 import { isString, useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -56,6 +62,7 @@ const ItemDialog = ({
   });
   const [selectedCompany, setSelectedCompany] = React.useState('');
   const [selectedEmployee, setSelectedEmployee] = React.useState('');
+  const [additionalData, setAdditionalData] = React.useState<any>(null);
   const [isFocused, setIsFocused] = React.useState(false);
   const [isActive, setIsActive] = React.useState<any>(false);
   const [statusLoading, setstatusLoading] = React.useState<any>(false);
@@ -321,10 +328,10 @@ const ItemDialog = ({
       setSelectedCompany('');
     }
     if (selectedData) {
-      console.log(selectedData);
       setSelectedCompany(selectedData.company_id);
       setSelectedEmployee(selectedData.employee_id);
       setIsActive(selectedData.is_active === 1);
+      setAdditionalData(selectedData.additional_data);
     }
     if (show) {
       // inputRef.current?.focus();
@@ -378,20 +385,20 @@ const ItemDialog = ({
   };
 
   const handleToggle = async (val: any) => {
-    console.log(val);
     setIsActive(val);
 
     try {
       setstatusLoading(true);
-      const resp = await setVehicleStatus(
-        selectedData.id,
-        val ? '1' : '0'
-      );
+      const resp = await setVehicleStatus(selectedData.id, val ? '1' : '0');
       console.log(resp);
     } catch (err) {
     } finally {
       setstatusLoading(false);
     }
+  };
+
+  const handleAdditionalDataForm = (field: string, value: any) => {
+    setAdditionalData({ ...additionalData, [field]: value });
   };
 
   const validationSchema = generateValidationSchema(formObject.fields);
@@ -403,8 +410,16 @@ const ItemDialog = ({
     validationSchema,
     onSubmit: (values) => {
       // Handle form submission
-      console.log(values);
-      upsertVehicle({ ...values, company_id: selectedCompany });
+      // console.log({
+      //   ...values,
+      //   company_id: selectedCompany,
+      //   additional_data: additionalData
+      // });
+      upsertVehicle({
+        ...values,
+        company_id: selectedCompany,
+        additional_data: additionalData
+      });
       SetShowItemDialog(false, {});
     },
     enableReinitialize: true
@@ -419,7 +434,7 @@ const ItemDialog = ({
       className="bg-gray-50 shadow-lg overflow-scroll fixed p-8 w-1/2 top-0 right-0 bottom-0 z-50"
     >
       <div className="flex justify-between">
-        <span className="font-medium   text-2xl antialiased">
+        <span className="font-medium text-2xl antialiased">
           {!selectedData ? 'Entry' : 'Edit'} Data Kendaraan{' '}
           {selectedData?.nopol_kendaraan}
         </span>
@@ -539,7 +554,9 @@ const ItemDialog = ({
                     <TextInput
                       id={field.name}
                       name={field.name}
-                      disabled={field.name === 'kode_rfid' || field.name === 'umur'}
+                      disabled={
+                        field.name === 'kode_rfid' || field.name === 'umur'
+                      }
                       placeholder=""
                       error={formik.touched[field.name] && error}
                       errorMessage={formik.touched[field.name] && error}
@@ -569,6 +586,23 @@ const ItemDialog = ({
             </div>
           );
         })}
+        <Divider />
+        <div className="pa-0 mb-4">
+          <span className="text-xl font-medium antialiased text-gray-500">
+            Data Tambahan
+          </span>
+          <p className="text-sm mb-1 mt-3 font-normal text-slate-500">
+            Relaksasi ( Tahun )
+          </p>
+          <TextInput
+            disabled={false}
+            placeholder="relaksasi"
+            value={additionalData ? additionalData?.relaksasi : ''}
+            onChange={(e) =>
+              handleAdditionalDataForm('relaksasi', e.target.value)
+            }
+          />
+        </div>
         <div className="flex justify-between">
           {error && (
             <div>
