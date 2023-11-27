@@ -19,13 +19,21 @@ const MasterDataTableHistory = () => {
   const [selectedData, setselectedData] = useState<any>({});
   const [filterText, setFilterText] = useState<string>('');
 
-  const filteredItems = historyList.filter(
-    (item: any) =>
-      item.vehicle_detail &&
-      item.vehicle_detail.nopol_kendaraan
-        .toLowerCase()
-        .includes(filterText.toLowerCase())
-  );
+  const filteredItems: any = historyList
+    .filter(
+      (item: any) =>
+        item.vehicle_detail &&
+        item.vehicle_detail.nopol_kendaraan
+          .toLowerCase()
+          .includes(filterText.toLowerCase())
+    )
+    .map((item: any) => {
+      const { vehicle_detail, ...rest } = item;
+      return {
+        ...rest,
+        nomor_polisi: item.vehicle_detail.nopol_kendaraan
+      };
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const exportToExcel = () => {
     const workbook = XLSX.utils.book_new();
