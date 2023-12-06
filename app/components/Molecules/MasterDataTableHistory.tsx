@@ -106,7 +106,7 @@ const MasterDataTableHistory = () => {
     {
       name: 'No Polisi',
       selector: (row: any) => {
-        const nopol = row.vehicle_detail?.nopol_kendaraan;
+        const nopol = row.nomor_polisi;
         return nopol;
       },
       sortable: true
