@@ -52,7 +52,8 @@ const ItemDialog = ({
     companyList,
     employeeList,
     fetchEmployeeByCompanyId,
-    setVehicleStatus
+    setVehicleStatus,
+    userInfo
   } = useAuth();
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -448,35 +449,39 @@ const ItemDialog = ({
           Close
         </Button>
       </div>
-      <div className="p-4 flex justify-between items-center flex-row border-2 border-slate-200 rounded-lg mt-8">
-        {!statusLoading ? (
-          <>
-            <div className="flex flex-col">
-              <span className="text-md">Status</span>
-              <span
-                className={`text-2xl font-semibold font-mono text-${
-                  isActive ? 'green-400' : 'red-500'
-                }`}
-              >
-                {isActive ? 'AKTIF' : 'NONAKTIF'}
-              </span>
-            </div>
-            <div>
-              <Switch
-                uncheckedIcon={false}
-                checkedIcon={false}
-                draggable={false}
-                offColor="#ecc7f9"
-                onColor="#8a4af3"
-                onChange={handleToggle}
-                checked={isActive}
-              />
-            </div>
-          </>
-        ) : (
-          <div className="text-slate-400">Mengupdate Data. . .</div>
-        )}
-      </div>
+      {userInfo?.role === 'supervisor' ? (
+        <div className="p-4 flex justify-between items-center flex-row border-2 border-slate-200 rounded-lg mt-8">
+          {!statusLoading ? (
+            <>
+              <div className="flex flex-col">
+                <span className="text-md">Status</span>
+                <span
+                  className={`text-2xl font-semibold font-mono text-${
+                    isActive ? 'green-400' : 'red-500'
+                  }`}
+                >
+                  {isActive ? 'AKTIF' : 'NONAKTIF'}
+                </span>
+              </div>
+              <div>
+                <Switch
+                  uncheckedIcon={false}
+                  checkedIcon={false}
+                  draggable={false}
+                  offColor="#ecc7f9"
+                  onColor="#8a4af3"
+                  onChange={handleToggle}
+                  checked={isActive}
+                />
+              </div>
+            </>
+          ) : (
+            <div className="text-slate-400">Mengupdate Data. . .</div>
+          )}
+        </div>
+      ) : (
+        <></>
+      )}
       <input
         ref={inputRef}
         id="cardInput"
