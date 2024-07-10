@@ -14,26 +14,13 @@ import ItemDialogCompany from '../Atoms/ItemDialogCompany';
 import { useAuth } from '../../context/AuthContext';
 
 const MasterDataTableHistory = () => {
-  const { fetchHistory, loading, historyList } = useAuth();
+  const { fetchHistory, historyList } = useAuth();
   const [ShowItemDialog, setShowItemDialog] = useState(false);
   const [selectedData, setselectedData] = useState<any>({});
   const [filterText, setFilterText] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [filteredItems, setFilteredItems] = useState<any>(null);
 
-  const filteredItems: any = historyList
-    .filter(
-      (item: any) =>
-        item.vehicle_detail &&
-        item.vehicle_detail.nopol_kendaraan
-          .toLowerCase()
-          .includes(filterText.toLowerCase())
-    )
-    .map((item: any) => {
-      const { vehicle_detail, ...rest } = item;
-      return {
-        ...rest,
-        nomor_polisi: item.vehicle_detail.nopol_kendaraan
-      };
-    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const exportToExcel = () => {
     const workbook = XLSX.utils.book_new();
@@ -141,6 +128,7 @@ const MasterDataTableHistory = () => {
   ];
 
   useEffect(() => {
+    console.log(filteredItems !== null);
     initData();
     return () => {
       console.log('clean Up');
@@ -148,10 +136,36 @@ const MasterDataTableHistory = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (historyList.length) {
+      const list: any = historyList
+        .filter(
+          (item: any) =>
+            item.vehicle_detail &&
+            item.vehicle_detail.nopol_kendaraan
+              .toLowerCase()
+              .includes(filterText.toLowerCase())
+        )
+        .map((item: any) => {
+          const { vehicle_detail, ...rest } = item;
+          return {
+            ...rest,
+            nomor_polisi: item.vehicle_detail.nopol_kendaraan
+          };
+        });
+      setFilteredItems(list);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [historyList]);
+
   const initData = async () => {
+    setLoading(true);
     try {
       await fetchHistory();
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSetShowItemDialog = async (
@@ -187,7 +201,7 @@ const MasterDataTableHistory = () => {
             Tambah Data
           </Button> */}
         </div>
-        {loading && (
+        {filteredItems === null && (
           <Card className="my-8 animate-pulse">
             <div className="flex gap-4">
               <div className="bg-slate-200 flex-auto h-3 rounded" />
@@ -195,9 +209,15 @@ const MasterDataTableHistory = () => {
               <div className="bg-slate-200 flex-auto h-3 rounded" />
             </div>
             <div className="bg-slate-200 flex-auto h-3 rounded mt-4" />
+            <div className="flex gap-4 mt-4">
+              <div className="bg-slate-200 flex-auto h-3 rounded" />
+              <div className="bg-slate-200 flex-auto h-3 rounded" />
+              <div className="bg-slate-200 flex-auto h-3 rounded" />
+            </div>
+            <div className="bg-slate-200 flex-auto h-3 rounded mt-4" />
           </Card>
         )}
-        {!loading && (
+        {filteredItems !== null && (
           <DataTable
             data={filteredItems}
             columns={columns}
