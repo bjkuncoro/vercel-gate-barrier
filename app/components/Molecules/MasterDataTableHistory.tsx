@@ -14,12 +14,14 @@ import ItemDialogCompany from '../Atoms/ItemDialogCompany';
 import { useAuth } from '../../context/AuthContext';
 
 const MasterDataTableHistory = () => {
-  const { fetchHistory, historyList } = useAuth();
+  const { fetchHistory, historyData } = useAuth();
   const [ShowItemDialog, setShowItemDialog] = useState(false);
   const [selectedData, setselectedData] = useState<any>({});
   const [filterText, setFilterText] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [filteredItems, setFilteredItems] = useState<any>(null);
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(50);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const exportToExcel = () => {
@@ -128,7 +130,6 @@ const MasterDataTableHistory = () => {
   ];
 
   useEffect(() => {
-    console.log(filteredItems !== null);
     initData();
     return () => {
       console.log('clean Up');
@@ -137,35 +138,38 @@ const MasterDataTableHistory = () => {
   }, []);
 
   useEffect(() => {
-    if (historyList.length) {
-      const list: any = historyList
-        .filter(
-          (item: any) =>
-            item.vehicle_detail &&
-            item.vehicle_detail.nopol_kendaraan
-              .toLowerCase()
-              .includes(filterText.toLowerCase())
-        )
-        .map((item: any) => {
-          const { vehicle_detail, ...rest } = item;
-          return {
-            ...rest,
-            nomor_polisi: item.vehicle_detail.nopol_kendaraan
-          };
-        });
-      setFilteredItems(list);
-    }
+    // if (historyData && historyData.rows?.length) {
+    const list: any = historyData.rows.map((item: any) => {
+      const { vehicle_detail, ...rest } = item;
+      return {
+        ...rest,
+        nomor_polisi: item.vehicle_detail.nopol_kendaraan
+      };
+    });
+    setFilteredItems(list);
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [historyList]);
+  }, [historyData.rows]);
+
+  useEffect(() => {
+    console.log(filterText);
+    fetchHistory(1, limit, filterText);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterText]);
 
   const initData = async () => {
     setLoading(true);
     try {
-      await fetchHistory();
+      await fetchHistory(page, limit, filterText);
     } catch (error) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePageChange = async (page: number) => {
+    setPage(page);
+    await fetchHistory(page, limit, filterText);
   };
 
   const handleSetShowItemDialog = async (
@@ -224,6 +228,12 @@ const MasterDataTableHistory = () => {
             customStyles={customStyles}
             subHeader
             subHeaderComponent={subHeaderComponentMemo}
+            pagination
+            paginationServer
+            paginationTotalRows={historyData.count}
+            onChangePage={handlePageChange}
+            paginationPerPage={limit}
+            paginationComponentOptions={{ noRowsPerPage: true }}
           />
         )}
       </Card>

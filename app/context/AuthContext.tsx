@@ -13,7 +13,7 @@ const AuthContext = createContext({
   fetchCompany: async () => {},
   fetchEmployee: async () => {},
   fetchVehicle: async () => {},
-  fetchHistory: async () => {},
+  fetchHistory: async (page: number, limit: number, filterText?: string) => {},
   upsertEmployee: (data: any) => {},
   upsertCompany: (data: any) => {},
   upsertVehicle: (data: any) => {},
@@ -42,7 +42,10 @@ const AuthContext = createContext({
   companyList: [],
   employeeList: [],
   vehicleList: [],
-  historyList: []
+  historyData: {
+    count: 0,
+    rows: []
+  }
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -57,7 +60,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [companyList, setCompanyList] = useState<any>([]);
   const [employeeList, setEmployeeList] = useState<any>([]);
   const [vehicleList, setVehicleList] = useState<any>([]);
-  const [historyList, setHistoryList] = useState<any>([]);
+  const [historyData, setHistoryData] = useState<any>({
+    count: 0,
+    rows: []
+  });
   const pathname = usePathname();
   const isPublic = pathname?.includes('/public') || pathname?.includes('/auth');
 
@@ -145,13 +151,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const fetchHistory = async () => {
+  const fetchHistory = async (page: number, limit = 50, filterText = '') => {
     try {
       setLoading(true);
-      const response = await ReqApi.get('/histories/list');
-      if (response.data.length) {
-        setHistoryList(response.data);
-      }
+      const search = filterText ? `&search=${filterText}` : '';
+      const response = await ReqApi.get(
+        `/histories/list?page=${page}&limit=${limit}${search}`
+      );
+      // if (response.data.rows.length) {
+      setHistoryData(response.data);
+      // }
     } catch (error) {
       console.log(error);
     } finally {
@@ -389,7 +398,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         loadingImport,
         downloadTemplate,
         setVehicleStatus,
-        historyList,
+        historyData,
         fetchHistoryByLast,
         fetchNotification
       }}
