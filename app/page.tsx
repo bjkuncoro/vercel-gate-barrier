@@ -55,7 +55,6 @@ export default function PlaygroundPage() {
     fetchHistory,
     fetchVehicle,
     companyList,
-    historyList,
     vehicleList,
     fetchHistoryToday,
     fetchVehicleGroupBy
