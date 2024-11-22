@@ -143,7 +143,7 @@ const MasterDataTableHistory = () => {
       const { vehicle_detail, ...rest } = item;
       return {
         ...rest,
-        nomor_polisi: item.vehicle_detail.nopol_kendaraan
+        nomor_polisi: item.vehicle_detail?.nopol_kendaraan
       };
     });
     setFilteredItems(list);
