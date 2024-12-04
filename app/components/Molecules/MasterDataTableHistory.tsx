@@ -25,8 +25,20 @@ const MasterDataTableHistory = () => {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const exportToExcel = () => {
+    const formattedData = filteredItems.map((item: any) => {
+      delete item.updatedAt;
+      delete item.id;
+      delete item.vehicle_id;
+      const data = {
+        ...item,
+        tanggal: moment(item.createdAt).format('YYYY-MM-DD'),
+        waktu: moment(item.createdAt).format('HH:mm:ss')
+      };
+      delete data.createdAt;
+      return data;
+    });
     const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet(filteredItems);
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet 1');
     XLSX.writeFile(workbook, `${moment().format('YYYY-MM-DD')}.xlsx`);
   };
